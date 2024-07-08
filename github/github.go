@@ -51,7 +51,9 @@ func githubInfo(login string) (string, int, error) {
 		return "", 0, fmt.Errorf("%#v - %s", url, resp.Status)
 	}
 
-	fmt.Printf("Content-Type: %s\n", resp.Header.Get("Content-Type"))
+	defer resp.Body.Close()
+
+	// fmt.Printf("Content-Type: %s\n", resp.Header.Get("Content-Type"))
 
 	var r struct { // anonymous struct
 		Name string
