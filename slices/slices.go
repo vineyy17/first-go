@@ -32,6 +32,20 @@ func main() {
 		s4 = appendInt(s4, i)
 	}
 	fmt.Println("s4", len(s4), cap(s4))
+	fmt.Println(concat([]string{"A", "B"}, []string{"C", "D", "E"})) // [A B C D E]
+}
+
+// func concat(s1, s2 []string) []string {
+// 	// Restriction: No "for" loops
+// 	s3 := append(s1[:len(s1):len(s1)], s2...)
+// 	return s3
+// }
+
+func concat(s1, s2 []string) []string {
+	s := make([]string, len(s1)+len(s2))
+	copy(s, s1)
+	copy(s[len(s1):], s2)
+	return s
 }
 
 func appendInt(s []int, v int) []int {
