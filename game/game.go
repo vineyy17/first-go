@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	var i1 Item
@@ -24,6 +26,7 @@ func main() {
 	p1 := Player{
 		Name: "Parzival",
 		Item: Item{500, 300},
+		Keys: []Key{Jade, Copper},
 	}
 
 	fmt.Printf("p1: %#v\n", p1)
@@ -47,15 +50,43 @@ func main() {
 	fmt.Printf("p1 (after move): %#v\n", p1)
 	fmt.Printf("i2 (after move): %#v\n", i2)
 
+	k := Jade
+	fmt.Println("k:", k)
+	fmt.Println("key:", Key(17))
+
+	// time.Time import json.Marshaler interface
+	// json.NewEncoder(os.Stdout).Encode(time.Now())
+
+	p1.FoundKey(Jade)
+	fmt.Println(p1.Keys)
+
+	p1.FoundKey(Jade)
+	fmt.Println(p1.Keys)
 }
 
-// go >= 1.18
-// func NewNumber[T int | float64](kind string) T {
-// 	if kind == "int" {
-// 		return 0
-// 	}
-// 	return 0.0
-// }
+// Implement fmt.Stringer interface
+func (k Key) String() string {
+	switch k {
+	case Jade:
+		return "jade"
+	case Copper:
+		return "copper"
+	case Crystal:
+		return "crystal"
+	}
+
+	return fmt.Sprintf("<Key %d>", k)
+}
+
+// Go's version of "enum"
+const (
+	Jade Key = iota + 1
+	Copper
+	Crystal
+	invalidKey // internal (not exported)
+)
+
+type Key byte
 
 // Rule of thumb: Accept interfaces, return types
 
@@ -70,9 +101,32 @@ type mover interface {
 	// Move(int, int)
 }
 
+func (p *Player) FoundKey(k Key) error {
+
+	if k < Jade || k >= invalidKey {
+		return fmt.Errorf("invalid key: %#v", k)
+	}
+
+	if !containsKey(p.Keys, k) {
+		p.Keys = append(p.Keys, k)
+	}
+
+	return nil
+}
+
+func containsKey(keys []Key, k Key) bool {
+	for _, k2 := range keys {
+		if k2 == k {
+			return true
+		}
+	}
+	return false
+}
+
 type Player struct {
 	Name string
-	Item // Embed Item
+	Item       // Embed Item
+	Keys []Key // Slice of Keys
 }
 
 // i is called the receiver
